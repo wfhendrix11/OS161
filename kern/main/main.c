@@ -61,6 +61,7 @@ boot(void)
 	 * dev/generic/console.c).
 	 */
 
+	hello();
 	kprintf("\n");
 	kprintf("OS/161 base system version %s\n", BASE_VERSION);
 	kprintf("%s", harvard_copyright);
