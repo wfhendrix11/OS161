@@ -51,6 +51,15 @@
 #define DB_KMALLOC     0x800
 
 extern u_int32_t dbflags;
+extern u_int32_t dbflags_1;
+extern u_int32_t dbflags_2;
+extern u_int32_t dbflags_3;
+extern u_int32_t dbflags_4;
+extern u_int32_t dbflags_5;
+extern u_int32_t dbflags_6;
+extern u_int32_t dbflags_7;
+extern u_int32_t dbflags_8;
+extern u_int32_t dbflags_9;
 
 /*
  * DEBUG() is for conditionally printing debug messages to the console.
