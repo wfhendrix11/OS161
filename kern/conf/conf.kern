@@ -370,6 +370,7 @@ file      thread/thread.c
 # Main/toplevel stuff
 #
 
+file	    main/hello.c
 file      main/main.c
 file      main/menu.c
 
