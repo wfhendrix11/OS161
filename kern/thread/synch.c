@@ -113,6 +113,7 @@ lock_create(const char *name)
 	}
 	
 	// add stuff here as needed
+	lock->holder = NULL;
 	
 	return lock;
 }
@@ -131,27 +132,81 @@ lock_destroy(struct lock *lock)
 void
 lock_acquire(struct lock *lock)
 {
-	// Write this
+	////////////////
+	// Write this //
+	////////////////
 
-	(void)lock;  // suppress warning until code gets written
+	// check parameters
+	assert(lock != NULL);
+
+	// turn off interrupts
+	int spl = splhigh(); 
+
+	// check deadlock
+	if (lock_do_i_hold(lock))
+		panic("Lock %s at %p: Deadlock.\n", lock->name, lock);
+
+	// wait for the lock to become free
+	while (lock->holder != NULL) {
+		thread_sleep(lock);
+	}
+
+	// this thread is holding the lock
+	lock->holder = curthread;
+
+	// turn on interrupts
+	splx(spl);
 }
 
 void
 lock_release(struct lock *lock)
 {
-	// Write this
+	////////////////
+	// Write this //
+	////////////////
 
-	(void)lock;  // suppress warning until code gets written
+	// check parameters
+	assert(lock != NULL);
+
+	if (!lock_do_i_hold(lock))
+		panic("Lock %s at %p: Deadlock.\n", lock->name, lock);
+
+	int spl = splhigh();
+
+	lock->holder = NULL;
+	
+	thread_wakeup(lock);
+	
+	splx(spl);
 }
 
 int
 lock_do_i_hold(struct lock *lock)
 {
-	// Write this
+	////////////////
+	// Write this //
+	////////////////
 
-	(void)lock;  // suppress warning until code gets written
+	// check parameters
+	assert(lock != NULL);
 
-	return 1;    // dummy until code gets written
+	int spl;
+	int same;
+
+	spl = splhigh();
+
+	if (lock->holder == curthread)
+	{
+		same = 1;
+	}
+	else 
+	{
+		same = 0;
+	}
+
+	splx(spl);
+
+	return same;    // dummy until code gets written
 }
 
 ////////////////////////////////////////////////////////////
@@ -194,23 +249,74 @@ cv_destroy(struct cv *cv)
 void
 cv_wait(struct cv *cv, struct lock *lock)
 {
-	// Write this
-	(void)cv;    // suppress warning until code gets written
-	(void)lock;  // suppress warning until code gets written
+	////////////////
+	// Write this //
+	////////////////
+
+	// check parameters
+	assert(lock != NULL);
+	assert(cv != NULL);
+	
+	// turn off interrupts
+	int spl = splhigh();
+
+	// release lock
+	lock_release(lock);
+
+	// sleep the thread
+	thread_sleep(cv);
+
+	// acquire the lock 
+	lock_acquire(lock);
+
+	// turn on interrupts
+	splx(spl);
 }
 
 void
 cv_signal(struct cv *cv, struct lock *lock)
 {
-	// Write this
-	(void)cv;    // suppress warning until code gets written
-	(void)lock;  // suppress warning until code gets written
+	////////////////
+	// Write this //
+	////////////////
+
+	// check parameters
+	assert(lock != NULL);
+	assert(cv != NULL);
+
+	// turn off interrupts
+	int spl = splhigh();
+
+	if (!lock_do_i_hold(lock))
+		panic("cv_signal error: cv %s at %p, lock %s at %p.\n", cv->name, cv, lock->name, lock);
+
+	// wake up thread
+	thread_wakeup(cv);
+
+	// turn on interrupts
+	splx(spl);
 }
 
 void
 cv_broadcast(struct cv *cv, struct lock *lock)
 {
-	// Write this
-	(void)cv;    // suppress warning until code gets written
-	(void)lock;  // suppress warning until code gets written
+	////////////////
+	// Write this //
+	////////////////
+
+	// check parameters
+	assert(lock != NULL);
+	assert(cv != NULL);
+
+	// turn off interrupts
+	int spl = splhigh();
+
+	if (!lock_do_i_hold(lock))
+		panic("cv_broadcast error: cv %s at %p, lock %s at %p.\n", cv->name, cv, lock->name, lock);
+
+	// wake up thread
+	thread_wakeup(cv);
+
+	// turn on interrupts
+	splx(spl);
 }
