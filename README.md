@@ -6,11 +6,11 @@
 `./configure`   
 `cd kern/conf`   
 `./config ASST1`
-## Building the Kernel  
+## Building/Compiling the Kernel  
 `cd ~/cs161/src/kern/compile/ASST1` 'ASST1' is the new project!  
 `make depend`  
 `make`  
-`install`  
+`make install`  
 ## Running The Kernel
 Change into your root directory   
 `cd ~/cs161/root`  
